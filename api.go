@@ -12,14 +12,8 @@ type Platform string
 
 const Twitch Platform = "TWITCH"
 
-// The Location to/from which so send/receive a message to/from.
-type Location struct {
-	// Platform this Location is referring to.
-	Platform Platform
-}
-
-// PlatformMessage contains a message and the Location of its origin.
+// PlatformMessage contains a message and the Platform of its origin.
 type PlatformMessage struct {
-	From       Location
+	Platform   Platform
 	RawMessage string
 }

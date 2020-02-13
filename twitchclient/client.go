@@ -1,12 +1,14 @@
-package twitch
+package twitchclient
 
 import (
 	"fmt"
 	"github.com/MoBlaa/gbc"
+	"github.com/MoBlaa/gbc/twitchclient/modes"
 	"github.com/gorilla/websocket"
 	"io"
 	"log"
 	"net/url"
+	"regexp"
 	"strings"
 )
 
@@ -15,19 +17,28 @@ type OAuthAuthentication struct {
 	Token string
 }
 
-type TwitchClient struct {
+type Message gbc.PlatformMessage
+
+var mssgRegex = regexp.MustCompile("([@\\w=:;]+ )?([:\\w!@.]+ )?WHISPER(.*)?")
+
+func (mess Message) IsWhisper() bool {
+	return mssgRegex.MatchString(mess.RawMessage)
+}
+
+type Client struct {
 	server     *url.URL
 	auth       *OAuthAuthentication
 	channels   []string
 	membership bool
 	tags       bool
 	commands   bool
+	mode       modes.MessageRateMode
 
 	conn *websocket.Conn
 }
 
-func New(auth *OAuthAuthentication, opts ...Option) *TwitchClient {
-	client := &TwitchClient{
+func New(auth *OAuthAuthentication, opts ...Option) *Client {
+	client := &Client{
 		server: &url.URL{
 			Scheme: "wss",
 			Host:   "irc-ws.chat.twitch.tv:443",
@@ -48,7 +59,7 @@ func send(conn *websocket.Conn, mssg string) error {
 	return conn.WriteMessage(websocket.TextMessage, []byte(mssg))
 }
 
-func (client *TwitchClient) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc.PlatformMessage, error) {
+func (client *Client) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc.PlatformMessage, error) {
 	if client.conn != nil {
 		return nil, fmt.Errorf("already listening")
 	}
@@ -83,7 +94,7 @@ func (client *TwitchClient) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc
 	}
 	log.Printf("Logging in as '%s'", client.auth.Name)
 
-	// Initialize Connection with login and requesting capabilites (Tags, Memberships, etc.)
+	// Initialize Connection with login and requesting capabilities (Tags, Memberships, etc.)
 	for _, initMssg := range mssgs {
 		err = send(conn, initMssg)
 		if err != nil {
@@ -114,7 +125,7 @@ func (client *TwitchClient) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc
 
 				log.Printf("> %s", single)
 				out <- &gbc.PlatformMessage{
-					From:       gbc.Location{Platform: gbc.Twitch},
+					Platform:   gbc.Twitch,
 					RawMessage: single,
 				}
 			}
@@ -126,7 +137,7 @@ func (client *TwitchClient) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc
 		// This will also close the websocket, which closes the listener also
 		defer client.Disconnect()
 		for message := range in {
-			if message.From.Platform == gbc.Twitch {
+			if message.Platform == gbc.Twitch {
 				err := send(client.conn, message.RawMessage)
 				if err != nil {
 					log.Printf("error sending message: %v", err)
@@ -136,10 +147,11 @@ func (client *TwitchClient) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc
 		}
 	}()
 
-	return out, nil
+	lim := Limiter{Mode: client.mode}
+	return lim.Apply(out), nil
 }
 
-func (client *TwitchClient) Disconnect() {
+func (client *Client) Disconnect() {
 	err := client.conn.Close()
 	if err != nil {
 		log.Printf("failed to close websocket connection: %v", err)
