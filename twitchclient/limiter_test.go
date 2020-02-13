@@ -20,7 +20,7 @@ func TestTwitchLimiter_Close(t *testing.T) {
 		if more {
 			t.Fatal("Not properly closing output")
 		}
-	case <-time.NewTimer(time.Second).C:
+	case <-time.NewTimer(2 * time.Second).C:
 		t.Fatal("Timed out before close")
 	}
 }
@@ -39,7 +39,7 @@ func TestFanin_Close(t *testing.T) {
 		if more {
 			t.Fatal("Not properly closing output")
 		}
-	case <-time.NewTimer(time.Second).C:
+	case <-time.NewTimer(2 * time.Second).C:
 		t.Fatal("Timed out before close")
 	}
 }
@@ -110,7 +110,7 @@ func TestTwitchLimiter_WhisperPerSecond(t *testing.T) {
 				t.Fatalf("timeout between messages is to big :: expected: %v, actual: %v", expTimeout, took)
 				return
 			}
-		case <-time.NewTimer(time.Second).C:
+		case <-time.NewTimer(2 * time.Second).C:
 			t.Fatalf("Response timed out for message nr: %d", i+1)
 			return
 		}
@@ -179,7 +179,7 @@ func TestTwitchLimiter_ChatPer30Seconds(t *testing.T) {
 				t.Fatalf("Timeout between messages to a chat should have a minimum timeout of %v :: actual: %v", expTimeout, took)
 				return
 			}
-		case <-time.NewTimer(10 * time.Second).C:
+		case <-time.NewTimer(2 * time.Second).C:
 			t.Fatalf("Message nr. %d timed out", i)
 			return
 		}
