@@ -45,7 +45,7 @@ func (lim *Limiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMe
 	chatOut := limit.Apply(chats)
 	//// Chain Whisper-limits
 	// Limit daily contacted accounts
-	daily := limiter.DailyLimiter{Limit: lim.Mode.ToWhisperAccountsPerDay()}
+	daily := DailyLimiter{Limit: lim.Mode.ToWhisperAccountsPerDay()}
 	whisperAccOut := daily.Apply(whispers)
 	// Limit Messages whispered per minute
 	minLimiter := &limiter.Limiter{

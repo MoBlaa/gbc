@@ -1,4 +1,4 @@
-package limiter
+package twitchclient
 
 import (
 	"github.com/MoBlaa/gbc"
@@ -42,15 +42,15 @@ func TestDailyLimiter_limits(t *testing.T) {
 	mssgs := []*gbc.PlatformMessage{
 		{
 			Platform:   gbc.Twitch,
-			RawMessage: "WHISPER one :D:",
+			RawMessage: ":user!user@user.tmi.twitch.tv WHISPER one :D:",
 		},
 		{
 			Platform:   gbc.Twitch,
-			RawMessage: "WHISPER two :D:",
+			RawMessage: ":user!user@user.tmi.twitch.tv WHISPER two :D:",
 		},
 		{
 			Platform:   gbc.Twitch,
-			RawMessage: "WHISPER three :D:",
+			RawMessage: ":user!user@user.tmi.twitch.tv WHISPER three :D:",
 		},
 	}
 
@@ -80,15 +80,15 @@ func TestDailyLimiter_resetOnDayChange(t *testing.T) {
 	mssgs := []*gbc.PlatformMessage{
 		{
 			Platform:   gbc.Twitch,
-			RawMessage: "WHISPER three :D:",
+			RawMessage: ":user!user@user.tmi.twitch.tv WHISPER three :D:",
 		},
 		{
 			Platform:   gbc.Twitch,
-			RawMessage: "WHISPER three :D:",
+			RawMessage: ":user!user@user.tmi.twitch.tv WHISPER three :D:",
 		},
 		{
 			Platform:   gbc.Twitch,
-			RawMessage: "WHISPER three :D:",
+			RawMessage: ":user!user@user.tmi.twitch.tv WHISPER three :D:",
 		},
 	}
 

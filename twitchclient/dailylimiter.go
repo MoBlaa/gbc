@@ -1,42 +1,44 @@
-package limiter
+package twitchclient
 
 import (
 	"github.com/MoBlaa/gbc"
+	"github.com/MoBlaa/gbc/limiter"
 	"log"
 )
 
 // DailyLimiter limits the amount of accounts the client can emit messages to.
 type DailyLimiter struct {
 	Limit int
-	Clock Clock
+	Clock limiter.Clock
 }
 
 // FIXME: This should limit the Accounts, not the messages sent per platform
 func (lim *DailyLimiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMessage {
 	out := make(chan *gbc.PlatformMessage, lim.Limit)
 
-	var clock Clock
+	var clock limiter.Clock
 	if lim.Clock == nil {
-		clock = NewClock()
+		clock = limiter.NewClock()
 	} else {
 		clock = lim.Clock
 	}
 	go func() {
 		defer close(out)
-		contactedAccounts := make(map[gbc.Platform]struct{})
-		for mssg := range in {
+		contactedAccounts := make(map[string]struct{})
+		for platformMessage := range in {
+			mssg := Message(*platformMessage)
 			if clock.DaySwitched() {
 				// Reset records of sent targets if day changes
-				contactedAccounts = make(map[gbc.Platform]struct{})
+				contactedAccounts = make(map[string]struct{})
 			}
 
-			if _, contained := contactedAccounts[mssg.Platform]; !contained && len(contactedAccounts) >= lim.Limit {
+			if _, contained := contactedAccounts[mssg.User()]; !contained && len(contactedAccounts) >= lim.Limit {
 				// Output, that limit was reached and discard message
 				log.Printf("Reached limit of unique users to send whispers to. Discarding message sent to: %v\n", mssg.Platform)
 			} else {
 				// Add target and send message to output
-				contactedAccounts[mssg.Platform] = struct{}{}
-				out <- mssg
+				contactedAccounts[mssg.User()] = struct{}{}
+				out <- platformMessage
 			}
 		}
 	}()

@@ -25,6 +25,12 @@ func (mess Message) IsWhisper() bool {
 	return mssgRegex.MatchString(mess.RawMessage)
 }
 
+func (mess Message) User() string {
+	prefixStart := strings.Index(mess.RawMessage, ":")
+	prefixEnd := strings.Index(mess.RawMessage, "!")
+	return mess.RawMessage[prefixStart+1 : prefixEnd]
+}
+
 type Client struct {
 	server     *url.URL
 	auth       *OAuthAuthentication
