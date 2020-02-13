@@ -32,12 +32,12 @@ func (lim *DailyLimiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.Platf
 				contactedAccounts = make(map[string]struct{})
 			}
 
-			if _, contained := contactedAccounts[mssg.User()]; !contained && len(contactedAccounts) >= lim.Limit {
+			if _, contained := contactedAccounts[mssg.Receipt()]; !contained && len(contactedAccounts) >= lim.Limit {
 				// Output, that limit was reached and discard message
-				log.Printf("Reached limit of unique users to send whispers to. Discarding message sent to: %v\n", mssg.User())
+				log.Printf("Reached limit of unique users to send whispers to. Discarding message sent to: %v\n", mssg.Receipt())
 			} else {
 				// Add target and send message to output
-				contactedAccounts[mssg.User()] = struct{}{}
+				contactedAccounts[mssg.Receipt()] = struct{}{}
 				out <- platformMessage
 			}
 		}

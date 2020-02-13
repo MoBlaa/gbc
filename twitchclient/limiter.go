@@ -18,6 +18,7 @@ type Limiter struct {
 	Mode modes.MessageRateMode
 }
 
+// Apply the Limiter as a pipeline step to the given channel.
 func (lim *Limiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMessage {
 	whispers := make(chan *gbc.PlatformMessage)
 	chats := make(chan *gbc.PlatformMessage)

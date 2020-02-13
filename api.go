@@ -16,6 +16,8 @@ const Twitch Platform = "TWITCH"
 
 // PlatformMessage contains a message and the Platform of its origin.
 type PlatformMessage struct {
-	Platform   Platform
+	// Platform this message is sent to/received from.
+	Platform Platform
+	// RawMessage contains the raw message received from the platform.
 	RawMessage string
 }

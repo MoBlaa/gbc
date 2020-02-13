@@ -12,32 +12,41 @@ import (
 	"strings"
 )
 
-type OAuthAuthentication struct {
+// TwitchAuthentication contains authentication information for twitch.
+type TwitchAuthentication struct {
 	Name  string
 	Token string
 }
 
-type Message gbc.PlatformMessage
-
 var mssgRegex = regexp.MustCompile("([@\\w=:;]+ )?([:\\w!@.]+ )?WHISPER(.*)?")
 
+// Message sent from/to twitch.
+type Message gbc.PlatformMessage
+
+// IsWhisper returns if the message represents a whisper message.
 func (mess Message) IsWhisper() bool {
 	return mssgRegex.MatchString(mess.RawMessage)
 }
 
-func (mess Message) User() string {
+// Receipt extracts the first parameter of a whisper or privmsg as that represents the
+// user/channel the message is extracted to.
+func (mess Message) Receipt() string {
 	start := strings.Index(mess.RawMessage, "WHISPER")
 	if start == -1 {
 		start = strings.Index(mess.RawMessage, "PRIVMSG")
+	}
+	if start == -1 {
+		return ""
 	}
 	start += 8
 	end := strings.Index(mess.RawMessage[start:], " ")
 	return mess.RawMessage[start : start+end]
 }
 
+// Client handling communication with twitch.
 type Client struct {
 	server     *url.URL
-	auth       *OAuthAuthentication
+	auth       *TwitchAuthentication
 	channels   []string
 	membership bool
 	tags       bool
@@ -47,7 +56,8 @@ type Client struct {
 	conn *websocket.Conn
 }
 
-func New(auth *OAuthAuthentication, opts ...Option) *Client {
+// New creates a new TwitchClient with default parameters applying the given options.
+func New(auth *TwitchAuthentication, opts ...Option) *Client {
 	client := &Client{
 		server: &url.URL{
 			Scheme: "wss",
@@ -55,6 +65,7 @@ func New(auth *OAuthAuthentication, opts ...Option) *Client {
 		},
 		auth:     auth,
 		channels: []string{auth.Name},
+		mode:     modes.USER,
 	}
 
 	for _, opt := range opts {
@@ -69,6 +80,8 @@ func send(conn *websocket.Conn, mssg string) error {
 	return conn.WriteMessage(websocket.TextMessage, []byte(mssg))
 }
 
+// Connect establishes an connection to twitch. Messages sent to the `in` channel are sent to twitch
+// after messaging limits are applied. Returns a channel emitting messages received from twitch.
 func (client *Client) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc.PlatformMessage, error) {
 	if client.conn != nil {
 		return nil, fmt.Errorf("already listening")
@@ -146,7 +159,9 @@ func (client *Client) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc.Platf
 	go func() {
 		// This will also close the websocket, which closes the listener also
 		defer client.Disconnect()
-		for message := range in {
+		// Limit the output to twitch
+		lim := Limiter{Mode: client.mode}
+		for message := range lim.Apply(in) {
 			if message.Platform == gbc.Twitch {
 				err := send(client.conn, message.RawMessage)
 				if err != nil {
@@ -157,13 +172,14 @@ func (client *Client) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc.Platf
 		}
 	}()
 
-	lim := Limiter{Mode: client.mode}
-	return lim.Apply(out), nil
+	return out, nil
 }
 
+// Disconnect closes the connection to twitch.
 func (client *Client) Disconnect() {
 	err := client.conn.Close()
 	if err != nil {
 		log.Printf("failed to close websocket connection: %v", err)
 	}
+	client.conn = nil
 }
