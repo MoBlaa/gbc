@@ -5,13 +5,13 @@ import (
 	"log"
 )
 
+// DailyLimiter limits the amount of accounts the client can emit messages to.
 type DailyLimiter struct {
 	Limit int
 	Clock Clock
 }
 
-// DailyLimiter limits the amount of accounts the channel can emit messages to.
-// Expects the incoming messages to be whispers and be targeted to a username.
+// FIXME: This should limit the Accounts, not the messages sent per platform
 func (lim *DailyLimiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMessage {
 	out := make(chan *gbc.PlatformMessage, lim.Limit)
 

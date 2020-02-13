@@ -8,8 +8,10 @@ type Client interface {
 	Disconnect()
 }
 
+// Platform on which a Message was sent.
 type Platform string
 
+// Twitch platform.
 const Twitch Platform = "TWITCH"
 
 // PlatformMessage contains a message and the Platform of its origin.
