@@ -146,16 +146,16 @@ func (client *Client) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc.Platf
 					continue
 				}
 
+				out <- &gbc.PlatformMessage{
+					Platform:   gbc.Twitch,
+					RawMessage: single,
+				}
+
 				if strings.HasSuffix(single, "PING :tmi.twitch.tv") {
 					err = send(client.conn, "PONG :tmi.twitch.tv")
 					if err != nil {
 						log.Fatalf("failed to send PONG message: %v\n", err)
 					}
-				}
-
-				out <- &gbc.PlatformMessage{
-					Platform:   gbc.Twitch,
-					RawMessage: single,
 				}
 			}
 		}
