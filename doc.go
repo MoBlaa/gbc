@@ -10,8 +10,8 @@
 //
 // 	// Authentication is required
 //	auth := &twitchclient.TwitchAuthentication{
-//		Name:  "mo_blaa",
-//		Token: "oauth:8vt1t2fd2ye84sf9x0wny1o8qdaw7s",
+//		Name:  <username>,
+//		Token: <oauth-token>,
 //	}
 // 	// Creating a client with some options. By default Membership, Tags and Commands are disabled.
 //	client := twitchclient.New(auth, twitchclient.WithMembership(), twitchclient.WithTags(), twitchclient.WithCommands())
