@@ -26,9 +26,13 @@ func (mess Message) IsWhisper() bool {
 }
 
 func (mess Message) User() string {
-	prefixStart := strings.Index(mess.RawMessage, ":")
-	prefixEnd := strings.Index(mess.RawMessage, "!")
-	return mess.RawMessage[prefixStart+1 : prefixEnd]
+	start := strings.Index(mess.RawMessage, "WHISPER")
+	if start == -1 {
+		start = strings.Index(mess.RawMessage, "PRIVMSG")
+	}
+	start += 8
+	end := strings.Index(mess.RawMessage[start:], " ")
+	return mess.RawMessage[start : start+end]
 }
 
 type Client struct {

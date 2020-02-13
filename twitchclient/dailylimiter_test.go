@@ -42,15 +42,15 @@ func TestDailyLimiter_limits(t *testing.T) {
 	mssgs := []*gbc.PlatformMessage{
 		{
 			Platform:   gbc.Twitch,
-			RawMessage: ":user!user@user.tmi.twitch.tv WHISPER one :D:",
+			RawMessage: "WHISPER one :D:",
 		},
 		{
 			Platform:   gbc.Twitch,
-			RawMessage: ":user!user@user.tmi.twitch.tv WHISPER two :D:",
+			RawMessage: "WHISPER two :D:",
 		},
 		{
 			Platform:   gbc.Twitch,
-			RawMessage: ":user!user@user.tmi.twitch.tv WHISPER three :D:",
+			RawMessage: "WHISPER three :D:",
 		},
 	}
 
@@ -80,15 +80,15 @@ func TestDailyLimiter_resetOnDayChange(t *testing.T) {
 	mssgs := []*gbc.PlatformMessage{
 		{
 			Platform:   gbc.Twitch,
-			RawMessage: ":user!user@user.tmi.twitch.tv WHISPER three :D:",
+			RawMessage: "WHISPER three :D:",
 		},
 		{
 			Platform:   gbc.Twitch,
-			RawMessage: ":user!user@user.tmi.twitch.tv WHISPER three :D:",
+			RawMessage: "WHISPER three :D:",
 		},
 		{
 			Platform:   gbc.Twitch,
-			RawMessage: ":user!user@user.tmi.twitch.tv WHISPER three :D:",
+			RawMessage: "WHISPER three :D:",
 		},
 	}
 

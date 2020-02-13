@@ -12,7 +12,7 @@ type DailyLimiter struct {
 	Clock limiter.Clock
 }
 
-// FIXME: This should limit the Accounts, not the messages sent per platform
+// Apply the DailyLimiter as a pipeline step to a channel.
 func (lim *DailyLimiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMessage {
 	out := make(chan *gbc.PlatformMessage, lim.Limit)
 
@@ -34,7 +34,7 @@ func (lim *DailyLimiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.Platf
 
 			if _, contained := contactedAccounts[mssg.User()]; !contained && len(contactedAccounts) >= lim.Limit {
 				// Output, that limit was reached and discard message
-				log.Printf("Reached limit of unique users to send whispers to. Discarding message sent to: %v\n", mssg.Platform)
+				log.Printf("Reached limit of unique users to send whispers to. Discarding message sent to: %v\n", mssg.User())
 			} else {
 				// Add target and send message to output
 				contactedAccounts[mssg.User()] = struct{}{}
