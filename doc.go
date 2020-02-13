@@ -8,9 +8,8 @@
 //
 // __Usage example with the Twitch Client:__
 //
-// `
 // 	// Authentication is required
-// 	auth := &twitchclient.TwitchAuthentication{
+//	auth := &twitchclient.TwitchAuthentication{
 //		Name:  "mo_blaa",
 //		Token: "oauth:8vt1t2fd2ye84sf9x0wny1o8qdaw7s",
 //	}
@@ -42,5 +41,5 @@
 //	// Maybe do some fancy graceful shutdown or other things
 //
 //	<-waitc // Wait for the client to quit
-// `
+//
 package gbc
