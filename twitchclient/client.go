@@ -97,7 +97,7 @@ func (client *Client) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc.Platf
 	client.conn = conn
 
 	mssgs := []string{
-		fmt.Sprintf("PASS oauth:%s", client.auth.Token),
+		fmt.Sprintf("PASS %s", client.auth.Token),
 		fmt.Sprintf("NICK %s", client.auth.Name),
 	}
 
@@ -113,7 +113,7 @@ func (client *Client) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc.Platf
 	}
 
 	for _, channel := range client.channels {
-		mssgs = append(mssgs, fmt.Sprintf("#%s", channel))
+		mssgs = append(mssgs, fmt.Sprintf("JOIN #%s", channel))
 	}
 	log.Printf("Logging in as '%s'", client.auth.Name)
 
@@ -146,7 +146,13 @@ func (client *Client) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc.Platf
 					continue
 				}
 
-				log.Printf("> %s", single)
+				if strings.HasSuffix(single, "PING :tmi.twitch.tv") {
+					err = send(client.conn, "PONG :tmi.twitch.tv")
+					if err != nil {
+						log.Fatalf("failed to send PONG message: %v\n", err)
+					}
+				}
+
 				out <- &gbc.PlatformMessage{
 					Platform:   gbc.Twitch,
 					RawMessage: single,
