@@ -22,7 +22,7 @@ func TestLimiter_Close(t *testing.T) {
 		if more {
 			t.Fatal("Not properly closing output")
 		}
-	case <-time.NewTimer(time.Second).C:
+	case <-time.NewTimer(10 * time.Second).C:
 		t.Fatal("Timed out before close")
 	}
 }
