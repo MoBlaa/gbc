@@ -6,9 +6,9 @@
 // Currently only Twitch IRC Chat is supported with messaging rates and automatically replying
 // to `PING` messages.
 //
-// ###### Usage example with the Twitch Client
+// __Usage example with the Twitch Client:__
 //
-// ```go
+// `
 // 	// Authentication is required
 // 	auth := &twitchclient.TwitchAuthentication{
 //		Name:  "mo_blaa",
@@ -42,5 +42,5 @@
 //	// Maybe do some fancy graceful shutdown or other things
 //
 //	<-waitc // Wait for the client to quit
-// ```
+// `
 package gbc
