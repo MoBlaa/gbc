@@ -6,7 +6,7 @@
 // Currently only Twitch IRC Chat is supported with messaging rates and automatically replying
 // to `PING` messages.
 //
-// __Usage example with the Twitch Client:__
+// Usage example with the Twitch Client:
 //
 // 	// Authentication is required
 //	auth := &twitchclient.TwitchAuthentication{
