@@ -28,9 +28,9 @@ func (lim *Limiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMe
 		defer close(chats)
 		for mssg := range in {
 			if Message(*mssg).IsWhisper() {
-				chats <- mssg
-			} else {
 				whispers <- mssg
+			} else {
+				chats <- mssg
 			}
 
 		}

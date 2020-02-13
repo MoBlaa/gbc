@@ -56,9 +56,7 @@ func TestTwitchLimiter_Accounts(t *testing.T) {
 	}
 
 	in := make(chan *gbc.PlatformMessage, 45)
-	done := make(chan struct{})
 	defer close(in)
-	defer close(done)
 
 	lim := Limiter{Mode: modes.USER}
 	out := lim.Apply(in)
@@ -69,7 +67,7 @@ func TestTwitchLimiter_Accounts(t *testing.T) {
 		// Wait for response and check if 41th message times out
 		select {
 		case <-out:
-		case <-time.NewTimer(time.Second).C:
+		case <-time.NewTimer(2 * time.Second).C:
 			if i != 40 {
 				// Last one timed out -> success
 				t.Fatalf("Response to a message timed out: %d", i)
@@ -163,10 +161,10 @@ func TestTwitchLimiter_ChatPer30Seconds(t *testing.T) {
 		},
 	}
 
-	in := make(chan *gbc.PlatformMessage, 5)
+	in := make(chan *gbc.PlatformMessage)
 	defer close(in)
 
-	lim := Limiter{Mode: modes.USER}
+	lim := &Limiter{Mode: modes.USER}
 	out := lim.Apply(in)
 
 	for i, mssg := range mssgs {
@@ -177,6 +175,7 @@ func TestTwitchLimiter_ChatPer30Seconds(t *testing.T) {
 		case <-out:
 			took := time.Since(start).Round(100 * time.Millisecond)
 			if took < expTimeout {
+				t.Log(i)
 				t.Fatalf("Timeout between messages to a chat should have a minimum timeout of %v :: actual: %v", expTimeout, took)
 				return
 			}

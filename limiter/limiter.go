@@ -16,12 +16,11 @@ type Limiter struct {
 // maximum number of messages (limit) in a given duration.
 func (lim *Limiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMessage {
 	// No buffers as the sender
-	out := make(chan *gbc.PlatformMessage, lim.Limit+1)
+	out := make(chan *gbc.PlatformMessage)
 
 	go func() {
 		defer close(out)
-		timeout := lim.Duration / time.Duration(lim.Limit)
-		for range time.NewTicker(timeout).C {
+		for range time.NewTicker(lim.Duration / time.Duration(lim.Limit)).C {
 			mssg, ok := <-in
 			if !ok {
 				break
