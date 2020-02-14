@@ -1,4 +1,4 @@
-package internal
+package twitchclient
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 func TestTwitchLimiter_Close(t *testing.T) {
 	input := make(chan *gbc.PlatformMessage, 45)
 
-	lim := Limiter{Mode: modes.USER}
+	lim := limiter{Mode: modes.USER}
 	out := lim.Apply(input)
 
 	close(input)
@@ -58,7 +58,7 @@ func TestTwitchLimiter_Accounts(t *testing.T) {
 	in := make(chan *gbc.PlatformMessage, 45)
 	defer close(in)
 
-	lim := Limiter{Mode: modes.USER}
+	lim := limiter{Mode: modes.USER}
 	out := lim.Apply(in)
 
 	for i, mssg := range mssgs {
@@ -96,7 +96,7 @@ func TestTwitchLimiter_WhisperPerSecond(t *testing.T) {
 	in := make(chan *gbc.PlatformMessage, 5)
 	defer close(in)
 
-	lim := Limiter{Mode: modes.USER}
+	lim := limiter{Mode: modes.USER}
 	out := lim.Apply(in)
 
 	for i, mssg := range mssgs {
@@ -129,7 +129,7 @@ func TestTwitchLimiter_WhisperPerMinute(t *testing.T) {
 	in := make(chan *gbc.PlatformMessage, 102)
 	defer close(in)
 
-	lim := Limiter{Mode: modes.USER}
+	lim := limiter{Mode: modes.USER}
 	out := lim.Apply(in)
 
 	for _, mssg := range mssgs {
@@ -164,7 +164,7 @@ func TestTwitchLimiter_ChatPer30Seconds(t *testing.T) {
 	in := make(chan *gbc.PlatformMessage)
 	defer close(in)
 
-	lim := &Limiter{Mode: modes.USER}
+	lim := &limiter{Mode: modes.USER}
 	out := lim.Apply(in)
 
 	for i, mssg := range mssgs {

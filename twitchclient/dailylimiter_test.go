@@ -1,4 +1,4 @@
-package internal
+package twitchclient
 
 import (
 	"github.com/MoBlaa/gbc"
@@ -23,7 +23,7 @@ func (cl testClock) DaySwitched() bool {
 func TestDailyLimiter_Close(t *testing.T) {
 	input := make(chan *gbc.PlatformMessage, 45)
 
-	lim := DailyLimiter{Limit: 2}
+	lim := dailyLimiter{Limit: 2}
 	out := lim.Apply(input)
 
 	close(input)
@@ -57,7 +57,7 @@ func TestDailyLimiter_limits(t *testing.T) {
 	in := make(chan *gbc.PlatformMessage)
 	defer close(in)
 
-	daily := DailyLimiter{Limit: 2, Clock: testClock{
+	daily := dailyLimiter{Limit: 2, Clock: testClock{
 		lock:        &sync.Mutex{},
 		daySwitched: false,
 	}}
@@ -101,7 +101,7 @@ func TestDailyLimiter_resetOnDayChange(t *testing.T) {
 		lock:        &sync.Mutex{},
 		daySwitched: false,
 	}
-	daily := DailyLimiter{Limit: 2, Clock: clock}
+	daily := dailyLimiter{Limit: 2, Clock: clock}
 	out := daily.Apply(in)
 
 	in <- mssgs[0]

@@ -1,26 +1,25 @@
-package internal
+package twitchclient
 
 import (
 	"github.com/MoBlaa/gbc"
 	"github.com/MoBlaa/gbc/internal"
-	"github.com/MoBlaa/gbc/twitchclient"
 	"github.com/MoBlaa/gbc/twitchclient/modes"
 	"sync"
 	"time"
 )
 
-// Limiter adjusts message output to message limits of Twitch.
+// limiter adjusts message output to message limits of Twitch.
 // These are categorized as:
 // - whispers to accounts per day
 // - whisper per second
 // - whisper per minute
 // - chat message per 30 seconds
-type Limiter struct {
+type limiter struct {
 	Mode modes.MessageRateMode
 }
 
-// Apply the Limiter as a pipeline step to the given channel.
-func (lim *Limiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMessage {
+// Apply the limiter as a pipeline step to the given channel.
+func (lim *limiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMessage {
 	whispers := make(chan *gbc.PlatformMessage)
 	chats := make(chan *gbc.PlatformMessage)
 
@@ -29,7 +28,7 @@ func (lim *Limiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMe
 		defer close(whispers)
 		defer close(chats)
 		for mssg := range in {
-			if twitchclient.Message(*mssg).IsWhisper() {
+			if Message(*mssg).IsWhisper() {
 				whispers <- mssg
 			} else {
 				chats <- mssg
@@ -47,7 +46,7 @@ func (lim *Limiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMe
 	chatOut := limit.Apply(chats)
 	//// Chain Whisper-limits
 	// Limit daily contacted accounts
-	daily := DailyLimiter{Limit: lim.Mode.ToWhisperAccountsPerDay()}
+	daily := dailyLimiter{Limit: lim.Mode.ToWhisperAccountsPerDay()}
 	whisperAccOut := daily.Apply(whispers)
 	// Limit Messages whispered per minute
 	minLimiter := &internal.Limiter{

@@ -1,20 +1,19 @@
-package internal
+package twitchclient
 
 import (
 	"github.com/MoBlaa/gbc"
 	"github.com/MoBlaa/gbc/internal"
-	"github.com/MoBlaa/gbc/twitchclient"
 	"log"
 )
 
-// DailyLimiter limits the amount of accounts the client can emit messages to.
-type DailyLimiter struct {
+// dailyLimiter limits the amount of accounts the client can emit messages to.
+type dailyLimiter struct {
 	Limit int
 	Clock internal.Clock
 }
 
-// Apply the DailyLimiter as a pipeline step to a channel.
-func (lim *DailyLimiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMessage {
+// Apply the dailyLimiter as a pipeline step to a channel.
+func (lim *dailyLimiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMessage {
 	out := make(chan *gbc.PlatformMessage, lim.Limit)
 
 	var clock internal.Clock
@@ -27,7 +26,7 @@ func (lim *DailyLimiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.Platf
 		defer close(out)
 		contactedAccounts := make(map[string]struct{})
 		for platformMessage := range in {
-			mssg := twitchclient.Message(*platformMessage)
+			mssg := Message(*platformMessage)
 			if clock.DaySwitched() {
 				// Reset records of sent targets if day changes
 				contactedAccounts = make(map[string]struct{})

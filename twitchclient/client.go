@@ -3,7 +3,6 @@ package twitchclient
 import (
 	"fmt"
 	"github.com/MoBlaa/gbc"
-	"github.com/MoBlaa/gbc/twitchclient/internal"
 	"github.com/MoBlaa/gbc/twitchclient/modes"
 	"github.com/gorilla/websocket"
 	"io"
@@ -167,7 +166,7 @@ func (client *Client) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc.Platf
 		// This will also close the websocket, which closes the listener also
 		defer client.Disconnect()
 		// Limit the output to twitch
-		lim := internal.Limiter{Mode: client.mode}
+		lim := limiter{Mode: client.mode}
 		for message := range lim.Apply(in) {
 			if message.Platform == gbc.Twitch {
 				err := send(client.conn, message.RawMessage)
