@@ -1,4 +1,4 @@
-package limiter
+package internal
 
 import (
 	"github.com/MoBlaa/gbc"

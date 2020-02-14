@@ -9,16 +9,16 @@ import (
 // DailyLimiter limits the amount of accounts the client can emit messages to.
 type DailyLimiter struct {
 	Limit int
-	Clock limiter.Clock
+	Clock internal.Clock
 }
 
 // Apply the DailyLimiter as a pipeline step to a channel.
 func (lim *DailyLimiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMessage {
 	out := make(chan *gbc.PlatformMessage, lim.Limit)
 
-	var clock limiter.Clock
+	var clock internal.Clock
 	if lim.Clock == nil {
-		clock = limiter.NewClock()
+		clock = internal.NewClock()
 	} else {
 		clock = lim.Clock
 	}

@@ -39,7 +39,7 @@ func (lim *Limiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMe
 
 	//// Start Limiters
 	// Create channel limiting the chat output
-	limit := &limiter.Limiter{
+	limit := &internal.Limiter{
 		Duration: 30 * time.Second,
 		Limit:    lim.Mode.ToChatPer30Seconds(),
 	}
@@ -49,13 +49,13 @@ func (lim *Limiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMe
 	daily := DailyLimiter{Limit: lim.Mode.ToWhisperAccountsPerDay()}
 	whisperAccOut := daily.Apply(whispers)
 	// Limit Messages whispered per minute
-	minLimiter := &limiter.Limiter{
+	minLimiter := &internal.Limiter{
 		Duration: time.Minute,
 		Limit:    lim.Mode.ToWhisperPerMinute(),
 	}
 	whisperMinuteOut := minLimiter.Apply(whisperAccOut)
 	// Limit Messages whispered per second
-	secLimiter := &limiter.Limiter{
+	secLimiter := &internal.Limiter{
 		Duration: time.Second,
 		Limit:    lim.Mode.ToWhisperPerSecond(),
 	}
