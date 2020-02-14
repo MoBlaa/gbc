@@ -16,7 +16,7 @@ import (
 type TwitchAuthentication struct {
 	// Username of the twitch account to login with.
 	Username string
-	// Token contains the OAuth token which can be obtained through [TMI](https://twitchapps.com/tmi/).
+	// Token contains the OAuth token which can be obtained through https://twitchapps.com/tmi/.
 	Token string
 }
 
