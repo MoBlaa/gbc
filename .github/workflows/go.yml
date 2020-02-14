@@ -24,8 +24,8 @@ jobs:
         go get golang.org/x/lint/golint
     - name: Add to Path
       run: |
-        echo $GOPATH
-        echo "::set-env PATH='{PATH}:{GOPATH}'"
+        echo "{GOPATH}"
+        echo "::set-env PATH={PATH}:{GOPATH}"
 
   build:
     name: Build
