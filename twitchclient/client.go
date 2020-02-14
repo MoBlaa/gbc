@@ -14,7 +14,9 @@ import (
 
 // TwitchAuthentication contains authentication information for twitch.
 type TwitchAuthentication struct {
-	Name  string
+	// Username of the twitch account to login with.
+	Username string
+	// Token contains the OAuth token which can be obtained through [TMI](https://twitchapps.com/tmi/).
 	Token string
 }
 
@@ -64,7 +66,7 @@ func New(auth *TwitchAuthentication, opts ...Option) *Client {
 			Host:   "irc-ws.chat.twitch.tv:443",
 		},
 		auth:     auth,
-		channels: []string{auth.Name},
+		channels: []string{auth.Username},
 		mode:     modes.USER,
 	}
 
@@ -98,7 +100,7 @@ func (client *Client) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc.Platf
 
 	mssgs := []string{
 		fmt.Sprintf("PASS %s", client.auth.Token),
-		fmt.Sprintf("NICK %s", client.auth.Name),
+		fmt.Sprintf("NICK %s", client.auth.Username),
 	}
 
 	// Only include capabilities if enabled
@@ -115,7 +117,7 @@ func (client *Client) Connect(in <-chan *gbc.PlatformMessage) (<-chan *gbc.Platf
 	for _, channel := range client.channels {
 		mssgs = append(mssgs, fmt.Sprintf("JOIN #%s", channel))
 	}
-	log.Printf("Logging in as '%s'", client.auth.Name)
+	log.Printf("Logging in as '%s'", client.auth.Username)
 
 	// Initialize Connection with login and requesting capabilities (Tags, Memberships, etc.)
 	for _, initMssg := range mssgs {

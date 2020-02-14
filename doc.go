@@ -10,7 +10,7 @@
 //
 // 	// Authentication is required
 //	auth := &twitchclient.TwitchAuthentication{
-//		Name:  <username>,
+//		Username:  <username>,
 //		Token: <oauth-token>,
 //	}
 // 	// Creating a client with some options. By default Membership, Tags and Commands are disabled.
