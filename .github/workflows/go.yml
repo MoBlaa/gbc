@@ -24,9 +24,8 @@ jobs:
         go get golang.org/x/lint/golint
     - name: Add to Path
       run: |
+        echo $GOPATH
         export PATH="$PATH:$GOPATH/bin"
-        ls $GOPATH/bin
-        which golint
 
   build:
     name: Build
