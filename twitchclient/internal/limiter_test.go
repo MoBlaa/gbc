@@ -1,4 +1,4 @@
-package twitchclient
+package internal
 
 import (
 	"fmt"

@@ -1,8 +1,9 @@
-package twitchclient
+package internal
 
 import (
 	"github.com/MoBlaa/gbc"
 	"github.com/MoBlaa/gbc/internal"
+	"github.com/MoBlaa/gbc/twitchclient"
 	"github.com/MoBlaa/gbc/twitchclient/modes"
 	"sync"
 	"time"
@@ -28,7 +29,7 @@ func (lim *Limiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.PlatformMe
 		defer close(whispers)
 		defer close(chats)
 		for mssg := range in {
-			if Message(*mssg).IsWhisper() {
+			if twitchclient.Message(*mssg).IsWhisper() {
 				whispers <- mssg
 			} else {
 				chats <- mssg

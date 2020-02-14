@@ -1,4 +1,4 @@
-package twitchclient
+package internal
 
 import (
 	"github.com/MoBlaa/gbc"

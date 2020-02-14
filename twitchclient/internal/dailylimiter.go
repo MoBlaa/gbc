@@ -1,8 +1,9 @@
-package twitchclient
+package internal
 
 import (
 	"github.com/MoBlaa/gbc"
 	"github.com/MoBlaa/gbc/internal"
+	"github.com/MoBlaa/gbc/twitchclient"
 	"log"
 )
 
@@ -26,7 +27,7 @@ func (lim *DailyLimiter) Apply(in <-chan *gbc.PlatformMessage) <-chan *gbc.Platf
 		defer close(out)
 		contactedAccounts := make(map[string]struct{})
 		for platformMessage := range in {
-			mssg := Message(*platformMessage)
+			mssg := twitchclient.Message(*platformMessage)
 			if clock.DaySwitched() {
 				// Reset records of sent targets if day changes
 				contactedAccounts = make(map[string]struct{})
