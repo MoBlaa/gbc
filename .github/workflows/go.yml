@@ -22,6 +22,9 @@ jobs:
             dep ensure
         fi
         go get golang.org/x/lint/golint
+    - name: Add to Path
+      run: |
+        export PATH="$PATH:$GOPATH/bin"
 
   build:
     name: Build
