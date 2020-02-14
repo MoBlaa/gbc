@@ -2,7 +2,7 @@ package twitchclient
 
 import (
 	"github.com/MoBlaa/gbc"
-	"github.com/MoBlaa/gbc/limiter"
+	"github.com/MoBlaa/gbc/internal"
 	"log"
 )
 
