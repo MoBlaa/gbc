@@ -25,7 +25,7 @@ jobs:
     - name: Add to Path
       run: |
         echo $GOPATH
-        export PATH="$PATH:$GOPATH/bin"
+        echo "::set-env PATH='{PATH}:{GOPATH}'"
 
   build:
     name: Build
